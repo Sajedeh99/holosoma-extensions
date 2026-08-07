@@ -20,11 +20,13 @@ from holosoma.config_values import (
     curriculum,
     observation
 )
+from holosoma.config_values import termination as core_termination
+from holosoma.config_values import command as core_command
 from holosoma_ext.config_values import (
     robot,
+    reward,
     termination,
-    command,
-    reward
+    command
 )
 
 # ================================================================================================
@@ -50,10 +52,29 @@ go2_12dof = ExperimentConfig(
     ),
 )
 
+# ================================================================================================
+# ILIA locomotion experiment
+# ================================================================================================
+
+ilia_19dof = ExperimentConfig(
+    env_class="holosoma.envs.locomotion.locomotion_manager.LeggedRobotLocomotionManager",
+    training=TrainingConfig(project="hv-ilia-manager", name="ilia_19dof_manager"),
+    algo=replace(algo.ppo, config=replace(algo.ppo.config, num_learning_iterations=25000, use_symmetry=True)),
+    robot=robot.ilia_19dof,
+    terrain=terrain.terrain_locomotion_mix,
+    observation=observation.g1_29dof_loco_single_wolinvel, # same observation as G1
+    action=action.g1_29dof_joint_pos, # same joint position control as G1
+    termination=core_termination.g1_29dof_termination,
+    randomization=randomization.g1_29dof_randomization, # same randomization as G1
+    command=core_command.g1_29dof_command,
+    curriculum=curriculum.g1_29dof_curriculum, # same curriculum as G1
+    reward=reward.ilia_19dof_loco,
+)
 
 DEFAULTS = {
     **CORE_DEFAULTS,
     "go2_12dof": go2_12dof,
+    "ilia_19dof":ilia_19dof,
 }
 
 
